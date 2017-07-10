@@ -28,11 +28,14 @@ namespace
         if (elem.type() == mongo::NumberInt && strcmp(elem.fieldName(), "appId") == 0)
         {
             int appstanceId = elem.Int();
-            int realAppId = elem.Int() & (1<<20)-1;
+            int realAppId = appstanceId & ((1<<20)-1);
+            int realInstanceId = appstanceId >> 20;
             if (realAppId != appstanceId)
             {
                 valueStr += " ( appId = ";
                 valueStr += std::to_string(realAppId);
+                valueStr += ", instance = ";
+                valueStr += std::to_string(realInstanceId);
                 valueStr += " )";
             }
         }
