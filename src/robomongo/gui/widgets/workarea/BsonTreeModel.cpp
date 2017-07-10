@@ -23,6 +23,21 @@ namespace
         return QString("{ %1 %2 }").arg(itemsCount).arg(fields);
     }
 
+    void buildElementValueSuffix(const mongo::BSONElement &elem, std::string &valueStr)
+    {
+        if (elem.type() == mongo::NumberInt && strcmp(elem.fieldName(), "appId") == 0)
+        {
+            int appstanceId = elem.Int();
+            int realAppId = elem.Int() & (1<<20)-1;
+            if (realAppId != appstanceId)
+            {
+                valueStr += " ( appId = ";
+                valueStr += std::to_string(realAppId);
+                valueStr += " )";
+            }
+        }
+    }
+
     void parseDocument(BsonTreeItem *root, const mongo::BSONObj &doc, bool isArray)
     {            
             mongo::BSONObjIterator iterator(doc);
@@ -53,6 +68,7 @@ namespace
                 else {
                     std::string result;
                     BsonUtils::buildJsonString(element, result, AppRegistry::instance().settingsManager()->uuidEncoding(), AppRegistry::instance().settingsManager()->timeZone());
+                    buildElementValueSuffix(element, result);
                     childItemInner->setValue(QtUtils::toQString(result));
                 }
                 childItemInner->setType(element.type());

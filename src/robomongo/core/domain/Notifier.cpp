@@ -136,16 +136,6 @@ namespace Robomongo
         VERIFY(connect(_copyJsonAction, SIGNAL(triggered()), SLOT(onCopyJson())));        
     }
 
-    bool shouldAddDetailSection(BsonTreeItem *const item)
-    {
-        return item->key() == "appId" && item->type() == mongo::NumberInt;
-    }
-
-    QString buildDetailSectionText(BsonTreeItem *const item)
-    {
-        return "parsed appId";
-    }
-
     void Notifier::initMenu(QMenu *const menu, BsonTreeItem *const item)
     {
         bool isEditable = _queryInfo._info.isValid();
@@ -163,13 +153,6 @@ namespace Robomongo
             isObjectId = detail::isObjectIdType(item);
             isNotArrayChild = !detail::isArrayChild(item);
             isRoot = detail::isDocumentRoot(item);
-        }
-
-        if (shouldAddDetailSection(item)) {
-            QString detailStr = buildDetailSectionText(item);
-            std::cout << "adding detail section: " << detailStr.toStdString() << std::endl;
-            menu->addAction(detailStr);
-            menu->addSeparator();
         }
 
         if (onItem && isEditable) menu->addAction(_editDocumentAction);
